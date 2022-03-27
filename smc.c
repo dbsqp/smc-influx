@@ -1,6 +1,7 @@
 /*
- * Apple System Management Control (SMC) Tool 
- * Copyright (C) 2006 devnull 
+ * smc-influxdb Tool
+ * Copyright (C) 2006 devnull
+ * Copyright (C) 2022 Matt Parkinson
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,13 +18,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <IOKit/IOKitLib.h>
 #include <stdio.h>
 #include <string.h>
+#include <IOKit/IOKitLib.h>
 
-#include "smc.h"
+#include "smc-influxdb.h"
+
+#include <unistd.h>
+#include <time.h>
+
+#include <stdint.h>
+#include <inttypes.h>
 
 static io_connect_t conn;
+
+
 
 UInt32 _strtoul(char* str, int size, int base)
 {
@@ -48,6 +57,8 @@ void _ultostr(char* str, UInt32 val)
         (unsigned int)val >> 8,
         (unsigned int)val);
 }
+
+
 
 kern_return_t SMCOpen(void)
 {
@@ -79,10 +90,14 @@ kern_return_t SMCOpen(void)
     return kIOReturnSuccess;
 }
 
+
+
 kern_return_t SMCClose()
 {
     return IOServiceClose(conn);
 }
+
+
 
 kern_return_t SMCCall(int index, SMCKeyData_t* inputStructure, SMCKeyData_t* outputStructure)
 {
@@ -106,6 +121,8 @@ kern_return_t SMCCall(int index, SMCKeyData_t* inputStructure, SMCKeyData_t* out
         outputStructure); /* ouputStructure */
 #endif
 }
+
+
 
 kern_return_t SMCReadKey(UInt32Char_t key, SMCVal_t* val)
 {
@@ -138,220 +155,128 @@ kern_return_t SMCReadKey(UInt32Char_t key, SMCVal_t* val)
     return kIOReturnSuccess;
 }
 
-double SMCGetTemperature(char* key)
+
+char hostname[265];
+long int ens;
+
+
+float getSMCrpm(char* key)
+{
+    SMCVal_t val;
+    kern_return_t result;
+    float fval;
+
+    result = SMCReadKey(key, &val);
+    if (result == kIOReturnSuccess) {
+        if (val.dataSize > 0) {
+            if (strcmp(val.dataType, "flt " ) == 0) {
+                memcpy(&fval,val.bytes,sizeof(float));
+                return fval;
+            }
+        }
+    }
+    return -1.f;
+}
+
+void influxSMCfans()
+{
+    kern_return_t result;
+    SMCVal_t val;
+    UInt32Char_t key;
+    int nFans, i;
+
+    result = SMCReadKey("FNum", &val);
+
+    if (result == kIOReturnSuccess) {
+        nFans = _strtoul((char*)val.bytes, val.dataSize, 10);
+
+        for (i = 0; i < nFans; i++) {
+            sprintf(key, "F%dID", i);
+            result = SMCReadKey(key, &val);
+            if (result != kIOReturnSuccess) { continue; }
+
+            sprintf(key, "F%dAc", i);
+            double cur = getSMCrpm(key);
+            if (cur < 0.f) { continue; }
+
+            sprintf(key, "F%dMn", i);
+            float min = getSMCrpm(key);
+            if (min < 0.f) { continue; }
+
+            sprintf(key, "F%dMx", i);
+            float max = getSMCrpm(key);
+            if (max < 0.f) { continue; }
+
+            float pct = (cur - min ) / ( max - min );
+            pct *= 100.f;
+            if ( pct < 0.f) { pct = 0.f; }
+
+            printf("fan,host=%s,fan=Fan%i rpm=%08.2f,percent=%05.1f %ld\n", hostname, i+1, cur, pct, ens);
+        }
+    }
+}
+
+
+
+double getSMCtemp(char* key)
 {
     SMCVal_t val;
     kern_return_t result;
 
     result = SMCReadKey(key, &val);
     if (result == kIOReturnSuccess) {
-        // read succeeded - check returned value
         if (val.dataSize > 0) {
-            if (strcmp(val.dataType, DATATYPE_SP78) == 0) {
-                // convert sp78 value to temperature
+            if (strcmp(val.dataType, "sp78" ) == 0) {
                 int intValue = val.bytes[0] * 256 + (unsigned char)val.bytes[1];
                 return intValue / 256.0;
             }
         }
     }
-    // read failed
     return 0.0;
 }
 
-double SMCGetFanSpeed(char* key)
+void influxSMCtemp( char* key, char* sensor )
 {
-    SMCVal_t val;
-    kern_return_t result;
-
-    result = SMCReadKey(key, &val);
-    if (result == kIOReturnSuccess) {
-        // read succeeded - check returned value
-        if (val.dataSize > 0) {
-            if (strcmp(val.dataType, DATATYPE_FPE2) == 0) {
-                // convert fpe2 value to rpm
-                int intValue = (unsigned char)val.bytes[0] * 256 + (unsigned char)val.bytes[1];
-                return intValue / 4.0;
-            }
-        }
-    }
-    // read failed
-    return 0.0;
+    double temperature = getSMCtemp( key );
+    printf("temperature,host=%s,sensor=%-16svalue=%08.2f %ld\n", hostname, sensor, temperature, ens);
 }
 
-double convertToFahrenheit(double celsius)
-{
-    return (celsius * (9.0 / 5.0)) + 32.0;
-}
 
-// Requires SMCOpen()
-void readAndPrintCpuTemp(int show_title, char scale)
-{
-    double temperature = SMCGetTemperature(SMC_KEY_CPU_TEMP);
-    if (scale == 'F') {
-        temperature = convertToFahrenheit(temperature);
-    }
-
-    char* title = "";
-    if (show_title) {
-        title = "CPU: ";
-    }
-    printf("%s%0.1f °%c\n", title, temperature, scale);
-}
-
-// Requires SMCOpen()
-void readAndPrintGpuTemp(int show_title, char scale)
-{
-    double temperature = SMCGetTemperature(SMC_KEY_GPU_TEMP);
-    if (scale == 'F') {
-        temperature = convertToFahrenheit(temperature);
-    }
-
-    char* title = "";
-    if (show_title) {
-        title = "GPU: ";
-    }
-    printf("%s%0.1f °%c\n", title, temperature, scale);
-}
-
-float SMCGetFanRPM(char* key)
-{
-    SMCVal_t val;
-    kern_return_t result;
-
-    result = SMCReadKey(key, &val);
-    if (result == kIOReturnSuccess) {
-        // read succeeded - check returned value
-        if (val.dataSize > 0) {
-            if (strcmp(val.dataType, DATATYPE_FPE2) == 0) {
-                // convert fpe2 value to RPM
-                return ntohs(*(UInt16*)val.bytes) / 4.0;
-            }
-        }
-    }
-    // read failed
-    return -1.f;
-}
-
-// Requires SMCOpen()
-void readAndPrintFanRPMs(void)
-{
-    kern_return_t result;
-    SMCVal_t val;
-    UInt32Char_t key;
-    int totalFans, i;
-
-    result = SMCReadKey("FNum", &val);
-
-    if (result == kIOReturnSuccess) {
-        totalFans = _strtoul((char*)val.bytes, val.dataSize, 10);
-
-        printf("Num fans: %d\n", totalFans);
-        for (i = 0; i < totalFans; i++) {
-            sprintf(key, "F%dID", i);
-            result = SMCReadKey(key, &val);
-            if (result != kIOReturnSuccess) {
-                continue;
-            }
-            char* name = val.bytes + 4;
-
-            sprintf(key, "F%dAc", i);
-            float actual_speed = SMCGetFanRPM(key);
-            if (actual_speed < 0.f) {
-                continue;
-            }
-
-            sprintf(key, "F%dMn", i);
-            float minimum_speed = SMCGetFanRPM(key);
-            if (minimum_speed < 0.f) {
-                continue;
-            }
-
-            sprintf(key, "F%dMx", i);
-            float maximum_speed = SMCGetFanRPM(key);
-            if (maximum_speed < 0.f) {
-                continue;
-            }
-
-            float rpm = actual_speed - minimum_speed;
-            if (rpm < 0.f) {
-                rpm = 0.f;
-            }
-            float pct = rpm / (maximum_speed - minimum_speed);
-
-            pct *= 100.f;
-            printf("Fan %d - %s at %.0f RPM (%.0f%%)\n", i, name, rpm, pct);
-
-            //sprintf(key, "F%dSf", i);
-            //SMCReadKey(key, &val);
-            //printf("    Safe speed   : %.0f\n", strtof(val.bytes, val.dataSize, 2));
-            //sprintf(key, "F%dTg", i);
-            //SMCReadKey(key, &val);
-            //printf("    Target speed : %.0f\n", strtof(val.bytes, val.dataSize, 2));
-            //SMCReadKey("FS! ", &val);
-            //if ((_strtoul((char *)val.bytes, 2, 16) & (1 << i)) == 0)
-            //    printf("    Mode         : auto\n");
-            //else
-            //    printf("    Mode         : forced\n");
-        }
-    }
-}
 
 int main(int argc, char* argv[])
 {
-    char scale = 'C';
-    int cpu = 0;
-    int fan = 0;
-    int gpu = 0;
+    int status;
+    char hostnameFull[265];
 
-    int c;
-    while ((c = getopt(argc, argv, "CFcfgh?")) != -1) {
-        switch (c) {
-        case 'F':
-        case 'C':
-            scale = c;
-            break;
-        case 'c':
-            cpu = 1;
-            break;
-        case 'f':
-            fan = 1;
-            break;
-        case 'g':
-            gpu = 1;
-            break;
-        case 'h':
-        case '?':
-            printf("usage: osx-cpu-temp <options>\n");
-            printf("Options:\n");
-            printf("  -F  Display temperatures in degrees Fahrenheit.\n");
-            printf("  -C  Display temperatures in degrees Celsius (Default).\n");
-            printf("  -c  Display CPU temperature (Default).\n");
-            printf("  -g  Display GPU temperature.\n");
-            printf("  -f  Display fan speeds.\n");
-            printf("  -h  Display this help.\n");
-            printf("\nIf more than one of -c, -f, or -g are specified, titles will be added\n");
-            return -1;
-        }
-    }
+    long int ns;
+    time_t sec;
+    struct timespec spec;
 
-    if (!fan && !gpu) {
-        cpu = 1;
-    }
+    // get hostname
+    status = gethostname( &hostnameFull[0], 256 );
+    if ( status == -1 ) { strcpy(hostnameFull, "NULL"); }
 
-    int show_title = fan + gpu + cpu > 1;
+    const char *hostnameFullPtr = hostnameFull;
+    hostnameFullPtr = strchr(hostnameFullPtr, '.');
+    strncpy(hostname,&hostnameFull[0],hostnameFullPtr-hostnameFull);
 
+    // get epoch in ns
+    clock_gettime(CLOCK_REALTIME, &spec);
+    sec = spec.tv_sec;
+     ns = spec.tv_nsec;
+    ens =  sec * 1000000000 + ns;
+
+    // get SMC values and print in line protocol
     SMCOpen();
 
-    if (cpu) {
-        readAndPrintCpuTemp(show_title, scale);
-    }
-    if (gpu) {
-        readAndPrintGpuTemp(show_title, scale);
-    }
-    if (fan) {
-        readAndPrintFanRPMs();
-    }
+    influxSMCtemp("TG0P","GPU-Proximity");
+    influxSMCtemp("TC0P","CPU-Proximity");
+    influxSMCtemp("TH0X","SSD-Cooked-Max");
+    influxSMCtemp("TW0P","WiFi-Proximity");
+
+    influxSMCfans();
 
     SMCClose();
+
     return 0;
 }
