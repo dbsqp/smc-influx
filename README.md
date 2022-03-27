@@ -2,9 +2,7 @@
 
 Fetch SMC data from macOS Intel hardware and output in InfluxDB line protocol. Designed to be automatically called by a Telegraf exec input plugin.
 
-Code was mofified for my hardware and influxdb structure.
-
-Compiled C as script based based approach required elevated permissions
+Code was mofified for my hardware and influxdb structure. Compiled C based approch taken as script required elevated permissions.
 ```
 sudo powermetrics requires --samplers smc -i1 -n1 | awk
 ```
