@@ -4,6 +4,11 @@ Fetch SMC data from macOS Intel hardware and output in InfluxDB line protocol. D
 
 Code was mofified for my hardware and influxdb structure.
 
+Compiled C as script based based approach required elevated permissions
+```
+sudo powermetrics requires --samplers smc -i1 -n1 | awk
+```
+
 ## Usage 
 
 ```./smc-influxdb -h
