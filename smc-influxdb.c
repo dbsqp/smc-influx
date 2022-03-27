@@ -250,8 +250,9 @@ void influxSMCfans()
                     strcpy(fanID, "Other");
                     break;
             }
-
-            printf("fan,%ssensor=%-10s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, fanID, cur, pct, ens);
+            if ( cur > 0.0 ) {
+                printf("fan,%ssensor=%-10s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, fanID, cur, pct, ens);
+            }
         }
     }
 }
