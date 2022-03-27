@@ -251,7 +251,7 @@ void influxSMCfans()
                     break;
             }
 
-            printf("fan,%ssensor=%-13s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, fanID, cur, pct, ens);
+            printf("fan,%ssensor=%-10s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, fanID, cur, pct, ens);
         }
     }
 }
