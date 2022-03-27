@@ -390,9 +390,9 @@ int main(int argc, char* argv[])
 
     if ( all ) {
         influxSMCtemp("TC0P","CPU");
+        influxSMCtemp("TCXr","CPU-Package");
         influxSMCtemp("TC0E","CPU-Virtual-1");
         influxSMCtemp("TC0F","CPU-Virtual-2");
-
         influxSMCtemp("TC1C","CPU-Core-1");
         influxSMCtemp("TC2C","CPU-Core-2");
         influxSMCtemp("TC3C","CPU-Core-3");
@@ -411,9 +411,11 @@ int main(int argc, char* argv[])
         influxSMCtemp("TH0b","SSD-Drive-0-B");
         influxSMCtemp("TH1a","SSD-Drive-1-A");
         influxSMCtemp("TH1b","SSD-Drive-1-B");
+        influxSMCtemp("TH1c","SSD-Drive-1-C");
 
         influxSMCtemp("Ts0S","Memory");
         influxSMCtemp("TM0P","Memory-Bank");
+        influxSMCtemp("TM0p","Memory-DIMM");
 
         influxSMCtemp("Tm0P","Mainboard");
 
@@ -426,7 +428,8 @@ int main(int argc, char* argv[])
         influxSMCtemp("Ts0P","Palm-Rest-1");
         influxSMCtemp("Ts1P","Palm-Rest-2");
         influxSMCtemp("Ts1S","Top-Skin");
-
+        influxSMCtemp("TA0P","Airflow-1");
+        influxSMCtemp("TA1P","Airflow-2");
         influxSMCtemp("Th1H","Heatpipe-Left");
         influxSMCtemp("Th2H","Heatpipe-Right");
 
@@ -435,6 +438,9 @@ int main(int argc, char* argv[])
         influxSMCtemp("TCXC","PECI-CPU");
         influxSMCtemp("TCMX","PECI-MAX");
         influxSMCtemp("TCSA","PECI-SA");
+
+        influxSMCtemp("Te0T","TBT-Diode");
+        influxSMCtemp("Tp0C","Power-Supply");
     }
 
     SMCClose();
