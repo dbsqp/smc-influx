@@ -23,6 +23,7 @@ usage: smc-influx [cgfaA]
 ```
 make
 ```
+Note will give one warning ralating to kIOMasterPortDefault being deprecated.
 
 ### Running
 
