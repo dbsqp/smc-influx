@@ -278,7 +278,9 @@ double getSMCtemp(char* key)
 void influxSMCtemp( char* key, char* sensor )
 {
     double temperature = getSMCtemp( key );
-    printf("temperature,%ssensor=%-16svalue=%08.2f %ld\n", hostTag, sensor, temperature, ens);
+    if ( temperature > 0.0 ) {
+        printf("temperature,%ssensor=%-16svalue=%08.2f %ld\n", hostTag, sensor, temperature, ens);
+    }
 }
 
 
