@@ -377,7 +377,7 @@ int main(int argc, char* argv[])
         influxSMCtemp("TH0F","SSD-Filtered");
         influxSMCtemp("TH0a","SSD-Drive-0-A");
         influxSMCtemp("TH0b","SSD-Drive-0-B");
-        influxSMCtemp("Th1a","SSD-Drive-1-A");
+        influxSMCtemp("TH1a","SSD-Drive-1-A");
         influxSMCtemp("TH1b","SSD-Drive-1-B");
 
         influxSMCtemp("Ts0S","Memory");
