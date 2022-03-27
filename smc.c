@@ -29,6 +29,8 @@
 
 static io_connect_t conn;
 
+
+
 UInt32 _strtoul(char* str, int size, int base)
 {
     UInt32 total = 0;
@@ -222,4 +224,175 @@ void influxSMCfans()
             printf("fan,host=%s,fan=%-13s rpm=%08.2f,percent=%06.2f %ld\n", hostname, fanID, cur, pct, ens);
         }
     }
+}
+
+
+
+double getSMCtemp(char* key)
+{
+    SMCVal_t val;
+    kern_return_t result;
+
+    result = SMCReadKey(key, &val);
+    if (result == kIOReturnSuccess) {
+        if (val.dataSize > 0) {
+            if (strcmp(val.dataType, "sp78" ) == 0) {
+                int intValue = val.bytes[0] * 256 + (unsigned char)val.bytes[1];
+                return intValue / 256.0;
+            }
+        }
+    }
+    return 0.0;
+}
+
+void influxSMCtemp( char* key, char* sensor )
+{
+    double temperature = getSMCtemp( key );
+    printf("temperature,host=%s,sensor=%-16svalue=%08.2f %ld\n", hostname, sensor, temperature, ens);
+}
+
+
+
+int main(int argc, char* argv[])
+{
+    int status;
+    char hostnameFull[265];
+
+    long int ns;
+    time_t sec;
+    struct timespec spec;
+
+    // get hostname
+    status = gethostname( &hostnameFull[0], 256 );
+    if ( status == -1 ) { strcpy(hostnameFull, "NULL"); }
+
+    // strip domain from hostname
+    const char *hostnameFullPtr = hostnameFull;
+    hostnameFullPtr = strchr(hostnameFullPtr, '.');
+    strncpy(hostname,&hostnameFull[0],hostnameFullPtr-hostnameFull);
+
+    // get ns epoch
+    clock_gettime(CLOCK_REALTIME, &spec);
+    sec = spec.tv_sec;
+     ns = spec.tv_nsec;
+    ens =  sec * 1000000000 + ns;
+
+    // pass options
+    int cpu = 0;
+    int gpu = 0;
+    int wfi = 0;
+    int ssd = 0;
+    int fan = 0;
+    int all = 0;
+
+    int args;
+    while ((args = getopt(argc, argv, "aAcfghws?")) != -1) {
+        switch (args) {
+        case 'a':
+            cpu = 1;
+            gpu = 1;
+            fan = 1;
+            wfi = 1;
+            ssd = 1;
+            break;
+        case 'A':
+            all = 1;
+            fan = 1;
+            break;
+        case 'c':
+            cpu = 1;
+            break;
+        case 'f':
+            fan = 1;
+            break;
+        case 'g':
+            gpu = 1;
+            break;
+        case 'w':
+            wfi = 1;
+            break;
+        case 's':
+            ssd = 1;
+            break;
+
+        case 'h':
+        case '?':
+            printf("usage: smc-influx [cgfaA]\n");
+            printf("  -c  CPU temperature\n");
+            printf("  -g  GPU temperature\n");
+            printf("  -w  WiFi temperature\n");
+            printf("  -s  SSD temperature\n");
+            printf("  -f  fan speeds\n");
+            printf("  -a  CPU, GPU and fans - same as -cgf\n");
+            printf("  -A  all temperature and fan metrics\n");
+            printf("  -h  this info\n");
+            return -1;
+        }
+    }
+
+    // default -a
+    if ( !cpu && !gpu && !fan && !wfi && !ssd && !all ) { cpu = gpu = fan = wfi = ssd = 1; }
+
+    // get SMC values and print in line protocol
+    SMCOpen();
+
+    if ( fan ) { influxSMCfans(); }
+
+    if ( gpu && !all ) { influxSMCtemp("TG0P","GPU"); }
+    if ( cpu && !all ) { influxSMCtemp("TC0P","CPU"); }
+    if ( ssd && !all ) { influxSMCtemp("TH0X","SSD"); }
+    if ( wfi && !all ) { influxSMCtemp("TW0P","WiFi"); }
+
+    if ( all ) {
+        influxSMCtemp("TC0P","CPU");
+        influxSMCtemp("TC0E","CPU-Virtual-1");
+        influxSMCtemp("TC0F","CPU-Virtual-2");
+
+        influxSMCtemp("TC1C","CPU-Core-1");
+        influxSMCtemp("TC2C","CPU-Core-2");
+        influxSMCtemp("TC3C","CPU-Core-3");
+        influxSMCtemp("TC4C","CPU-Core-4");
+        influxSMCtemp("TC5C","CPU-Core-5");
+        influxSMCtemp("TC6C","CPU-Core-6");
+        influxSMCtemp("TC7C","CPU-Core-7");
+        influxSMCtemp("TC8C","CPU-Core-8");
+
+        influxSMCtemp("TG0P","GPU");
+        influxSMCtemp("TG1P","GPU-VRAM");
+
+        influxSMCtemp("TH0X","SSD");
+        influxSMCtemp("TH0F","SSD-Filtered");
+        influxSMCtemp("TH0a","SSD-Drive-0-A");
+        influxSMCtemp("TH0b","SSD-Drive-0-B");
+        influxSMCtemp("Th1a","SSD-Drive-1-A");
+        influxSMCtemp("TH1b","SSD-Drive-1-B");
+
+        influxSMCtemp("Ts0S","Memory");
+        influxSMCtemp("TM0P","Memory-Bank");
+
+        influxSMCtemp("Tm0P","Mainboard");
+
+        influxSMCtemp("TW0P","WiFi");
+
+        influxSMCtemp("TB1T","Battery-1");
+        influxSMCtemp("TB2T","Battery-2");
+
+        influxSMCtemp("TAOV","Ambient");
+        influxSMCtemp("Ts0P","Palm-Rest-1");
+        influxSMCtemp("Ts1P","Palm-Rest-2");
+        influxSMCtemp("Ts1S","Top-Skin");
+
+        influxSMCtemp("Th1H","Heatpipe-Left");
+        influxSMCtemp("Th2H","Heatpipe-Right");
+
+        influxSMCtemp("TPCD","PCH-Die");
+        influxSMCtemp("TCGC","PECI-GPU");
+        influxSMCtemp("TCXC","PECI-CPU");
+        influxSMCtemp("TCMX","PECI-MAX");
+        influxSMCtemp("TCSA","PECI-SA");
+    }
+
+    SMCClose();
+
+    return 0;
 }
