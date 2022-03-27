@@ -336,7 +336,6 @@ int main(int argc, char* argv[])
             break;
         case 'A':
             all = 1;
-            fan = 1;
             break;
         case 'c':
             cpu = 1;
@@ -381,14 +380,7 @@ int main(int argc, char* argv[])
     // get SMC values and print in line protocol
     SMCOpen();
 
-    if ( fan ) { influxSMCfans(); }
-
-    if ( gpu && !all ) { influxSMCtemp("TG0P","GPU"); }
-    if ( cpu && !all ) { influxSMCtemp("TC0P","CPU"); }
-    if ( ssd && !all ) { influxSMCtemp("TH0X","SSD"); }
-    if ( wfi && !all ) { influxSMCtemp("TW0P","WiFi"); }
-
-    if ( all ) {
+    if ( all ) {        
         influxSMCtemp("TC0P","CPU");
         influxSMCtemp("TCXr","CPU-Package");
         influxSMCtemp("TC0E","CPU-Virtual-1");
@@ -441,6 +433,14 @@ int main(int argc, char* argv[])
 
         influxSMCtemp("Te0T","TBT-Diode");
         influxSMCtemp("Tp0C","Power-Supply");
+        
+        influxSMCfans();
+    } else {
+        if ( cpu  ) { influxSMCtemp("TC0P","CPU"); }
+        if ( gpu ) { influxSMCtemp("TG0P","GPU"); }
+        if ( ssd ) { influxSMCtemp("TH0X","SSD"); }
+        if ( wfi ) { influxSMCtemp("TW0P","WiFi"); }
+        if ( fan ) { influxSMCfans(); }
     }
 
     SMCClose();
