@@ -270,6 +270,11 @@ int main(int argc, char* argv[])
     const char *hostnameFullPtr = hostnameFull;
     hostnameFullPtr = strchr(hostnameFullPtr, '.');
     strncpy(hostname,&hostnameFull[0],hostnameFullPtr-hostnameFull);
+    
+    // capatalise first letter of hostname
+    if ( hostname[0]>='a' && hostname[0]<='z' ) {
+        hostname[0]=hostname[0]-32;
+    }
 
     // get ns epoch
     clock_gettime(CLOCK_REALTIME, &spec);
