@@ -36,45 +36,45 @@ Note will give one warning ralating to kIOMasterPortDefault being deprecated.
 
 ### Output example
 
-```./smc-influxdb -A
-fan,host=laptop,fan=Left          rpm=01830.83,percent=000.00 1648383407464299000
-fan,host=laptop,fan=Right         rpm=01696.13,percent=000.00 1648383407464299000
-temperature,host=laptop,sensor=CPU             value=00044.69 1648383407464299000
-temperature,host=laptop,sensor=CPU-Virtual-1   value=00048.50 1648383407464299000
-temperature,host=laptop,sensor=CPU-Virtual-2   value=00049.99 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-1      value=00046.00 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-2      value=00046.00 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-3      value=00045.00 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-4      value=00046.00 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-5      value=00046.00 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-6      value=00046.00 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-7      value=00046.00 1648383407464299000
-temperature,host=laptop,sensor=CPU-Core-8      value=00044.00 1648383407464299000
-temperature,host=laptop,sensor=GPU             value=00043.25 1648383407464299000
-temperature,host=laptop,sensor=GPU-VRAM        value=00042.25 1648383407464299000
-temperature,host=laptop,sensor=SSD             value=00038.36 1648383407464299000
-temperature,host=laptop,sensor=SSD-Filtered    value=00038.23 1648383407464299000
-temperature,host=laptop,sensor=SSD-Drive-0-A   value=00035.47 1648383407464299000
-temperature,host=laptop,sensor=SSD-Drive-0-B   value=00036.76 1648383407464299000
-temperature,host=laptop,sensor=SSD-Drive-1-A   value=00000.00 1648383407464299000
-temperature,host=laptop,sensor=SSD-Drive-1-B   value=00038.36 1648383407464299000
-temperature,host=laptop,sensor=Memory          value=00035.96 1648383407464299000
-temperature,host=laptop,sensor=Memory-Bank     value=00043.06 1648383407464299000
-temperature,host=laptop,sensor=Mainboard       value=00045.31 1648383407464299000
-temperature,host=laptop,sensor=WiFi            value=00042.94 1648383407464299000
-temperature,host=laptop,sensor=Battery-1       value=00032.50 1648383407464299000
-temperature,host=laptop,sensor=Battery-2       value=00032.80 1648383407464299000
-temperature,host=laptop,sensor=Ambient         value=00024.20 1648383407464299000
-temperature,host=laptop,sensor=Palm-Rest-1     value=00032.00 1648383407464299000
-temperature,host=laptop,sensor=Palm-Rest-2     value=00030.00 1648383407464299000
-temperature,host=laptop,sensor=Top-Skin        value=00036.52 1648383407464299000
-temperature,host=laptop,sensor=Heatpipe-Left   value=00041.38 1648383407464299000
-temperature,host=laptop,sensor=Heatpipe-Right  value=00044.06 1648383407464299000
-temperature,host=laptop,sensor=PCH-Die         value=00049.00 1648383407464299000
-temperature,host=laptop,sensor=PECI-GPU        value=00046.00 1648383407464299000
-temperature,host=laptop,sensor=PECI-CPU        value=00047.14 1648383407464299000
-temperature,host=laptop,sensor=PECI-MAX        value=00047.14 1648383407464299000
-temperature,host=laptop,sensor=PECI-SA         value=00046.00 1648383407464299000
+```./smc-influxdb -nA
+fan,host=Laptop,fan=Left          rpm=01826.33,percent=000.00 1648386301516399000
+fan,host=Laptop,fan=Right         rpm=01699.72,percent=000.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU             value=00044.25 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Virtual-1   value=00049.09 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Virtual-2   value=00051.41 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-1      value=00053.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-2      value=00052.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-3      value=00059.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-4      value=00051.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-5      value=00053.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-6      value=00050.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-7      value=00049.00 1648386301516399000
+temperature,host=Laptop,sensor=CPU-Core-8      value=00047.00 1648386301516399000
+temperature,host=Laptop,sensor=GPU             value=00042.62 1648386301516399000
+temperature,host=Laptop,sensor=GPU-VRAM        value=00041.62 1648386301516399000
+temperature,host=Laptop,sensor=SSD             value=00038.51 1648386301516399000
+temperature,host=Laptop,sensor=SSD-Filtered    value=00038.42 1648386301516399000
+temperature,host=Laptop,sensor=SSD-Drive-0-A   value=00036.03 1648386301516399000
+temperature,host=Laptop,sensor=SSD-Drive-0-B   value=00037.24 1648386301516399000
+temperature,host=Laptop,sensor=SSD-Drive-1-A   value=00000.00 1648386301516399000
+temperature,host=Laptop,sensor=SSD-Drive-1-B   value=00038.51 1648386301516399000
+temperature,host=Laptop,sensor=Memory          value=00036.15 1648386301516399000
+temperature,host=Laptop,sensor=Memory-Bank     value=00043.06 1648386301516399000
+temperature,host=Laptop,sensor=Mainboard       value=00044.88 1648386301516399000
+temperature,host=Laptop,sensor=WiFi            value=00042.56 1648386301516399000
+temperature,host=Laptop,sensor=Battery-1       value=00033.60 1648386301516399000
+temperature,host=Laptop,sensor=Battery-2       value=00033.50 1648386301516399000
+temperature,host=Laptop,sensor=Ambient         value=00028.07 1648386301516399000
+temperature,host=Laptop,sensor=Palm-Rest-1     value=00033.00 1648386301516399000
+temperature,host=Laptop,sensor=Palm-Rest-2     value=00031.00 1648386301516399000
+temperature,host=Laptop,sensor=Top-Skin        value=00036.63 1648386301516399000
+temperature,host=Laptop,sensor=Heatpipe-Left   value=00040.62 1648386301516399000
+temperature,host=Laptop,sensor=Heatpipe-Right  value=00043.50 1648386301516399000
+temperature,host=Laptop,sensor=PCH-Die         value=00049.00 1648386301516399000
+temperature,host=Laptop,sensor=PECI-GPU        value=00047.00 1648386301516399000
+temperature,host=Laptop,sensor=PECI-CPU        value=00054.47 1648386301516399000
+temperature,host=Laptop,sensor=PECI-MAX        value=00059.00 1648386301516399000
+temperature,host=Laptop,sensor=PECI-SA         value=00051.00 1648386301516399000
 ```
 
 ## Telegraf Input Plugin
