@@ -73,6 +73,17 @@ temperature,host=laptop,sensor=PECI-MAX        value=00047.14 164838340746429900
 temperature,host=laptop,sensor=PECI-SA         value=00046.00 1648383407464299000
 ```
 
+## Telegraf Input Plugin
+
+Input plugin definition from telegraf.conf
+```
+[[inputs.exec]]
+  interval = "60s"
+  commands = ["/Users/dbsqp/.bin/smc-mac-influx"]
+  timeout = "5s"
+  data_format = "influx"
+```
+
 
 ### Source
 * https://github.com/lavoiesl/osx-cpu-temp
