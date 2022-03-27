@@ -154,6 +154,7 @@ kern_return_t SMCReadKey(UInt32Char_t key, SMCVal_t* val)
 
 
 char hostname[265];
+char hostTag[265];
 long int ens;
 
 
@@ -221,7 +222,7 @@ void influxSMCfans()
                     break;
             }
 
-            printf("fan,host=%s,fan=%-13s rpm=%08.2f,percent=%06.2f %ld\n", hostname, fanID, cur, pct, ens);
+            printf("fan,%sfan=%-13s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, fanID, cur, pct, ens);
         }
     }
 }
@@ -248,7 +249,7 @@ double getSMCtemp(char* key)
 void influxSMCtemp( char* key, char* sensor )
 {
     double temperature = getSMCtemp( key );
-    printf("temperature,host=%s,sensor=%-16svalue=%08.2f %ld\n", hostname, sensor, temperature, ens);
+    printf("temperature,%ssensor=%-16svalue=%08.2f %ld\n", hostTag, sensor, temperature, ens);
 }
 
 
@@ -289,9 +290,10 @@ int main(int argc, char* argv[])
     int ssd = 0;
     int fan = 0;
     int all = 0;
+    int tag = 0;
 
     int args;
-    while ((args = getopt(argc, argv, "aAcfghws?")) != -1) {
+    while ((args = getopt(argc, argv, "aAcfghwsn?")) != -1) {
         switch (args) {
         case 'a':
             cpu = 1;
@@ -319,10 +321,12 @@ int main(int argc, char* argv[])
         case 's':
             ssd = 1;
             break;
-
+        case 'n':
+            tag = 1;
+            break;
         case 'h':
         case '?':
-            printf("usage: smc-influx [cgfaA]\n");
+            printf("usage: smc-influx [aAcfghwsn]\n");
             printf("  -c  CPU temperature\n");
             printf("  -g  GPU temperature\n");
             printf("  -w  WiFi temperature\n");
@@ -330,11 +334,15 @@ int main(int argc, char* argv[])
             printf("  -f  fan speeds\n");
             printf("  -a  CPU, GPU and fans - same as -cgf\n");
             printf("  -A  all temperature and fan metrics\n");
+            printf("  -n  tag with hostname\n");
             printf("  -h  this info\n");
             return -1;
         }
     }
 
+    // tag with hostname -n
+    if ( tag ) { sprintf(hostTag, "host=%s,", hostname); }
+    
     // default -a
     if ( !cpu && !gpu && !fan && !wfi && !ssd && !all ) { cpu = gpu = fan = wfi = ssd = 1; }
 
