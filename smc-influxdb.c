@@ -45,6 +45,8 @@ UInt32 _strtoul(char* str, int size, int base)
     return total;
 }
 
+
+
 void _ultostr(char* str, UInt32 val)
 {
     str[0] = '\0';
@@ -53,6 +55,26 @@ void _ultostr(char* str, UInt32 val)
         (unsigned int)val >> 16,
         (unsigned int)val >> 8,
         (unsigned int)val);
+}
+
+
+
+float _strtof( char* str, int size, int e)
+{
+    float total = 0;
+    int i;
+    
+    for (i = 0; i < size; i++)
+    {
+        if (i == (size - 1))
+            total += (str[i] & 0xff) >> e;
+        else
+            total += str[i] << (size - 1 - i) * (8 - e);
+    }
+    
+    total += (str[size-1] & 0x03) * 0.25;
+    
+    return total;
 }
 
 
@@ -170,6 +192,9 @@ float getSMCrpm(char* key)
             if (strcmp(val.dataType, "flt " ) == 0) {
                 memcpy(&fval,val.bytes,sizeof(float));
                 return fval;
+            } else if ( strcmp(val.dataType, "fpe2" ) == 0 ) {
+                fval = _strtof(val.bytes, val.dataSize, 2);
+                return fval;
             }
         }
     }
@@ -212,7 +237,11 @@ void influxSMCfans()
 
             switch (i) {
                 case 0:
-                    strcpy(fanID, "Left");
+                    if ( nFans == 1 ) {
+                        strcpy(fanID, "Main");
+                    } else {
+                        strcpy(fanID, "Left"); 
+                    }
                     break;
                 case 1:
                     strcpy(fanID, "Right");
@@ -222,7 +251,7 @@ void influxSMCfans()
                     break;
             }
 
-            printf("fan,%sfan=%-13s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, fanID, cur, pct, ens);
+            printf("fan,%ssensor=%-13s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, fanID, cur, pct, ens);
         }
     }
 }
