@@ -390,7 +390,7 @@ int main(int argc, char* argv[])
         influxSMCtemp("TB1T","Battery-1");
         influxSMCtemp("TB2T","Battery-2");
 
-        influxSMCtemp("TAOV","Ambient");
+        influxSMCtemp("TA0V","Ambient");
         influxSMCtemp("Ts0P","Palm-Rest-1");
         influxSMCtemp("Ts1P","Palm-Rest-2");
         influxSMCtemp("Ts1S","Top-Skin");
