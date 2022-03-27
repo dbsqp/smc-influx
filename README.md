@@ -80,7 +80,7 @@ Input plugin definition from telegraf.conf
 ```
 [[inputs.exec]]
   interval = "60s"
-  commands = ["/Users/dbsqp/.bin/smc-mac-influx"]
+  commands = ["/Users/dbsqp/.bin/smc-influxdb -A"]
   timeout = "5s"
   data_format = "influx"
 ```
