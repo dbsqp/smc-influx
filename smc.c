@@ -27,12 +27,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include <stdint.h>
-#include <inttypes.h>
-
 static io_connect_t conn;
-
-
 
 UInt32 _strtoul(char* str, int size, int base)
 {
@@ -184,6 +179,7 @@ void influxSMCfans()
     SMCVal_t val;
     UInt32Char_t key;
     int nFans, i;
+    char fanID[8];
 
     result = SMCReadKey("FNum", &val);
 
@@ -211,72 +207,19 @@ void influxSMCfans()
             pct *= 100.f;
             if ( pct < 0.f) { pct = 0.f; }
 
-            printf("fan,host=%s,fan=Fan%i rpm=%08.2f,percent=%05.1f %ld\n", hostname, i+1, cur, pct, ens);
-        }
-    }
-}
-
-
-
-double getSMCtemp(char* key)
-{
-    SMCVal_t val;
-    kern_return_t result;
-
-    result = SMCReadKey(key, &val);
-    if (result == kIOReturnSuccess) {
-        if (val.dataSize > 0) {
-            if (strcmp(val.dataType, "sp78" ) == 0) {
-                int intValue = val.bytes[0] * 256 + (unsigned char)val.bytes[1];
-                return intValue / 256.0;
+            switch (i) {
+                case 0:
+                    strcpy(fanID, "Left");
+                    break;
+                case 1:
+                    strcpy(fanID, "Right");
+                    break;
+                case '?':
+                    strcpy(fanID, "Other");
+                    break;
             }
+
+            printf("fan,host=%s,fan=%-13s rpm=%08.2f,percent=%06.2f %ld\n", hostname, fanID, cur, pct, ens);
         }
     }
-    return 0.0;
-}
-
-void influxSMCtemp( char* key, char* sensor )
-{
-    double temperature = getSMCtemp( key );
-    printf("temperature,host=%s,sensor=%-16svalue=%08.2f %ld\n", hostname, sensor, temperature, ens);
-}
-
-
-
-int main(int argc, char* argv[])
-{
-    int status;
-    char hostnameFull[265];
-
-    long int ns;
-    time_t sec;
-    struct timespec spec;
-
-    // get hostname
-    status = gethostname( &hostnameFull[0], 256 );
-    if ( status == -1 ) { strcpy(hostnameFull, "NULL"); }
-
-    const char *hostnameFullPtr = hostnameFull;
-    hostnameFullPtr = strchr(hostnameFullPtr, '.');
-    strncpy(hostname,&hostnameFull[0],hostnameFullPtr-hostnameFull);
-
-    // get epoch in ns
-    clock_gettime(CLOCK_REALTIME, &spec);
-    sec = spec.tv_sec;
-     ns = spec.tv_nsec;
-    ens =  sec * 1000000000 + ns;
-
-    // get SMC values and print in line protocol
-    SMCOpen();
-
-    influxSMCtemp("TG0P","GPU-Proximity");
-    influxSMCtemp("TC0P","CPU-Proximity");
-    influxSMCtemp("TH0X","SSD-Cooked-Max");
-    influxSMCtemp("TW0P","WiFi-Proximity");
-
-    influxSMCfans();
-
-    SMCClose();
-
-    return 0;
 }
