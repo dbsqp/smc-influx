@@ -60,7 +60,7 @@ temperature,host=laptop,sensor=Mainboard       value=00045.31 164838340746429900
 temperature,host=laptop,sensor=WiFi            value=00042.94 1648383407464299000
 temperature,host=laptop,sensor=Battery-1       value=00032.50 1648383407464299000
 temperature,host=laptop,sensor=Battery-2       value=00032.80 1648383407464299000
-temperature,host=laptop,sensor=Ambient         value=00000.00 1648383407464299000
+temperature,host=laptop,sensor=Ambient         value=00024.20 1648383407464299000
 temperature,host=laptop,sensor=Palm-Rest-1     value=00032.00 1648383407464299000
 temperature,host=laptop,sensor=Palm-Rest-2     value=00030.00 1648383407464299000
 temperature,host=laptop,sensor=Top-Skin        value=00036.52 1648383407464299000
