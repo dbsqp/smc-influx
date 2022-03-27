@@ -436,7 +436,7 @@ int main(int argc, char* argv[])
         
         influxSMCfans();
     } else {
-        if ( cpu  ) { influxSMCtemp("TC0P","CPU"); }
+        if ( cpu ) { influxSMCtemp("TC0P","CPU"); }
         if ( gpu ) { influxSMCtemp("TG0P","GPU"); }
         if ( ssd ) { influxSMCtemp("TH0X","SSD"); }
         if ( wfi ) { influxSMCtemp("TW0P","WiFi"); }
