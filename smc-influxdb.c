@@ -251,7 +251,7 @@ void influxSMCfans()
                     break;
             }
             if ( cur > 0.0 ) {
-                printf("fan,%skey=F%iAc,sensor=%-10s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, i, fanID, cur, pct, ens);
+                printf("fan,%skey=F%iAc,sensor=%s rpm=%08.2f,percent=%06.2f %ld\n", hostTag, i, fanID, cur, pct, ens);
             }
         }
     }
@@ -280,7 +280,7 @@ void influxSMCtemp( char* key, char* sensor )
 {
     double temperature = getSMCtemp( key );
     if ( temperature > 0.0 ) {
-        printf("temperature,%skey=%s,sensor=%-16stemp=%08.2f %ld\n", hostTag, key, sensor, temperature, ens);
+        printf("temperature,%skey=%s,sensor=%s temp=%08.2f %ld\n", hostTag, key, sensor, temperature, ens);
     }
 }
 
