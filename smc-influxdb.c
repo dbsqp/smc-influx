@@ -382,7 +382,9 @@ int main(int argc, char* argv[])
 
     if ( all ) {        
         influxSMCtemp("TC0P","CPU");
+        influxSMCtemp("TC0p","CPU");
         influxSMCtemp("TCXr","CPU-Package");
+        influxSMCtemp("TCXR","CPU-Package");
         influxSMCtemp("TC0E","CPU-Virtual-1");
         influxSMCtemp("TC0F","CPU-Virtual-2");
         influxSMCtemp("TC1C","CPU-Core-1");
@@ -393,9 +395,18 @@ int main(int argc, char* argv[])
         influxSMCtemp("TC6C","CPU-Core-6");
         influxSMCtemp("TC7C","CPU-Core-7");
         influxSMCtemp("TC8C","CPU-Core-8");
+        influxSMCtemp("TC0c","CPU-Core-1");
+        influxSMCtemp("TC1c","CPU-Core-2");
+        influxSMCtemp("TC2c","CPU-Core-3");
+        influxSMCtemp("TC3c","CPU-Core-4");
 
         influxSMCtemp("TG0P","GPU");
         influxSMCtemp("TG1P","GPU-VRAM");
+        influxSMCtemp("TG0D","GPU-Die");
+        influxSMCtemp("TG0p","GPU");
+
+        influxSMCtemp("TH0P","HDD");
+        influxSMCtemp("TH0V","HDD-Drive");
 
         influxSMCtemp("TH0X","SSD");
         influxSMCtemp("TH0F","SSD-Filtered");
@@ -404,12 +415,25 @@ int main(int argc, char* argv[])
         influxSMCtemp("TH1a","SSD-Drive-1-A");
         influxSMCtemp("TH1b","SSD-Drive-1-B");
         influxSMCtemp("TH1c","SSD-Drive-1-C");
+        influxSMCtemp("TH1A","SSD-Drive-1-A");
+        influxSMCtemp("TH1B","SSD-Drive-1-B");
+
+        influxSMCtemp("TL0P","LCD");
+        influxSMCtemp("TL0V","LCD-Front-Right");
+        influxSMCtemp("TL0p","LCD-Front");
+        influxSMCtemp("TL1V","LCD-Front-Center");
 
         influxSMCtemp("Ts0S","Memory");
-        influxSMCtemp("TM0P","Memory-Bank");
-        influxSMCtemp("TM0p","Memory-DIMM");
+        influxSMCtemp("TM0P","Memory-Bank-1");
+        influxSMCtemp("TM1P","Memory-Bank-2");
+        influxSMCtemp("TM0p","Memory-DIMM-1");
+        influxSMCtemp("TM1p","Memory-DIMM-2");
+        influxSMCtemp("TM2p","Memory-DIMM-3");
+        influxSMCtemp("TM3p","Memory-DIMM-4");
+        influxSMCtemp("TM41","Memory-Virtual");
 
         influxSMCtemp("Tm0P","Mainboard");
+        influxSMCtemp("Tm1P","Mainboard-Bottom");
 
         influxSMCtemp("TW0P","WiFi");
 
@@ -419,11 +443,15 @@ int main(int argc, char* argv[])
         influxSMCtemp("TA0V","Ambient");
         influxSMCtemp("Ts0P","Palm-Rest-1");
         influxSMCtemp("Ts1P","Palm-Rest-2");
-        influxSMCtemp("Ts1S","Top-Skin");
+        influxSMCtemp("Ts1S","Skin-Top");
         influxSMCtemp("TA0P","Airflow-1");
         influxSMCtemp("TA1P","Airflow-2");
         influxSMCtemp("Th1H","Heatpipe-Left");
         influxSMCtemp("Th2H","Heatpipe-Right");
+
+        influxSMCtemp("TS0V","Skin");
+        influxSMCtemp("Tb0p","Backlight");
+        influxSMCtemp("Tb0P","BLC");
 
         influxSMCtemp("TPCD","PCH-Die");
         influxSMCtemp("TCGC","PECI-GPU");
@@ -431,8 +459,14 @@ int main(int argc, char* argv[])
         influxSMCtemp("TCMX","PECI-MAX");
         influxSMCtemp("TCSA","PECI-SA");
 
+        influxSMCtemp("TCGc","PECI-GPU");
+        influxSMCtemp("TCSc","PECI-SA");
+        influxSMCtemp("TCXc","PECI-CPU");
+
         influxSMCtemp("Te0T","TBT-Diode");
+        influxSMCtemp("Tm0p","EMC-Diode");
         influxSMCtemp("Tp0C","Power-Supply");
+        influxSMCtemp("Tp2h","Power-Supply-Heatsink");
         
         influxSMCfans();
     } else {
