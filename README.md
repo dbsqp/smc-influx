@@ -26,17 +26,16 @@ usage: smc-influx [cgfaA]
 ```
 make
 ```
-Note will give one warning ralating to kIOMasterPortDefault being deprecated.
 
 ### Running
 
 ```
-./smc-influxdb
+./influxdb-smc
 ```
 
 ### Output example
 
-```./smc-influxdb -nA
+```./influxdb-smc -nA
 fan,host=Laptop,fan=Left          rpm=01826.33,percent=000.00 1648386301516399000
 fan,host=Laptop,fan=Right         rpm=01699.72,percent=000.00 1648386301516399000
 temperature,host=Laptop,sensor=CPU             value=00044.25 1648386301516399000
@@ -83,7 +82,7 @@ Input plugin definition from telegraf.conf
 ```
 [[inputs.exec]]
   interval = "60s"
-  commands = ["/Users/dbsqp/.bin/smc-influxdb -A"]
+  commands = ["/Users/dbsqp/.bin/influxdb-smc -A"]
   timeout = "5s"
   data_format = "influx"
 ```
