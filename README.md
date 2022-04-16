@@ -10,7 +10,7 @@ sudo powermetrics requires --samplers smc -i1 -n1 | awk
 ## Usage 
 
 ```./influxdb-smc -h
-usage: influx-smc [cgfaA]
+usage: influxdb-smc [cgfaA]
   -c  CPU temperature
   -g  GPU temperature
   -w  WiFi temperature
