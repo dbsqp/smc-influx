@@ -10,7 +10,7 @@ clean :
 	rm $(EXEC)
 
 install : $(EXEC)
-	@install -v $(EXEC) $$(HOME)/.bin/$(EXEC)
+	@install -v $(EXEC) $(HOME)/.bin/$(EXEC)
 
 $(EXEC) : smc-influxdb.c
 	$(CC) $(CFLAGS) $(INC) -o $@ $?
