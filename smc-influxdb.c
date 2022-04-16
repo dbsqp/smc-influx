@@ -142,7 +142,7 @@ kern_return_t SMCOpen(void)
     io_object_t device;
 
     CFMutableDictionaryRef matchingDictionary = IOServiceMatching("AppleSMC");
-    result = IOServiceGetMatchingServices(kIOMasterPortDefault, matchingDictionary, &iterator);
+    result = IOServiceGetMatchingServices(kIOMainPortDefault, matchingDictionary, &iterator);
     if (result != kIOReturnSuccess) {
         printf("Error: IOServiceGetMatchingServices() = %08x\n", result);
         return 1;
