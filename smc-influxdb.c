@@ -413,7 +413,7 @@ int main(int argc, char* argv[])
             break;
         case 'h':
         case '?':
-            printf("usage: smc-influx [aAcfghwsn]\n");
+            printf("usage: influxdb-smc [aAcfghwsn]\n");
             printf("  -c  CPU temperature\n");
             printf("  -g  GPU temperature\n");
             printf("  -w  WiFi temperature\n");
